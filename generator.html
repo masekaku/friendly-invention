@@ -1,0 +1,58 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Generator Link Video Telegram</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background-color: #121212;
+      color: #fff;
+      font-family: sans-serif;
+      text-align: center;
+      padding: 30px;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      margin: 10px;
+      width: 80%;
+      max-width: 400px;
+    }
+    input {
+      background-color: #333;
+      color: #fff;
+    }
+    button {
+      background-color: #ff0050;
+      color: #fff;
+      cursor: pointer;
+    }
+    #output {
+      margin-top: 20px;
+      font-size: 16px;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <h2>🎬 Generator Link WebApp Telegram</h2>
+  <p>Masukkan ID video (contoh: Y8DIUlMz1)</p>
+  <input type="text" id="videoId" placeholder="Masukkan ID video" />
+  <button onclick="generate()">🔗 Buat Link</button>
+  <div id="output"></div>
+
+  <script>
+    function generate() {
+      const id = document.getElementById("videoId").value.trim();
+      if (!id) return alert("Masukkan ID terlebih dahulu!");
+      const baseUrl = "https://asupan-clren.vercel.app/?id=";
+      const result = baseUrl + id;
+      document.getElementById("output").innerHTML = \`<p>Link WebApp:</p><code>\${result}</code>\`;
+    }
+  </script>
+</body>
+</html>
