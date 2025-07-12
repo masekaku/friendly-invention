@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Daftar Video</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
-      background: #000;
+      background-color: #000;
       color: #fff;
       font-family: sans-serif;
       text-align: center;
@@ -34,20 +34,19 @@
       font-size: 16px;
       cursor: pointer;
     }
-    .warning {
-      color: red;
-      font-size: 18px;
-      margin-top: 100px;
-    }
   </style>
 </head>
 <body>
-  <h1>🎬 Daftar Video</h1>
-  <div id="content"></div>
-  <div class="pagination" id="pagination"></div>
+  <h1>📺 Daftar Video</h1>
+  <div id="video-list"></div>
+  <div class="pagination">
+    <button id="prevBtn">⬅️ Sebelumnya</button>
+    <button id="nextBtn">➡️ Selanjutnya</button>
+  </div>
 
   <script>
-    const isTelegram = navigator.userAgent.includes("Telegram");
+    const videosPerPage = 10;
+    let currentPage = 1;
 
     const videoIDs = [
       "Y8DIUlMz1", "MVgY0KAV1", "qOB2Y89G1", "tJsXt7UR1", "GmAo3x9D1",
@@ -55,50 +54,43 @@
       "HNKqvFzJ7", "SMtQ9vhJ8", "XqT29MkG9", "QLnzkAfk0", "ZKqvGxJm1"
     ];
 
-    const perPage = 10;
-    let currentPage = 1;
-
     function renderPage() {
-      const container = document.getElementById("content");
-      const pagination = document.getElementById("pagination");
+      const start = (currentPage - 1) * videosPerPage;
+      const end = start + videosPerPage;
+      const pageVideos = videoIDs.slice(start, end);
 
-      if (!isTelegram) {
-        container.innerHTML = '<div class="warning">🚫 Halaman ini hanya bisa dibuka melalui Mini App Telegram.</div>';
-        pagination.innerHTML = '';
-        return;
-      }
-
-      const start = (currentPage - 1) * perPage;
-      const end = start + perPage;
-      const videos = videoIDs.slice(start, end);
-
+      const container = document.getElementById('video-list');
       container.innerHTML = '';
-      videos.forEach(id => {
-        const div = document.createElement("div");
-        div.className = "video";
-        div.innerHTML = \`<iframe src="https://cdn.videy.co/\${id}" allowfullscreen></iframe>\`;
+      pageVideos.forEach(id => {
+        const div = document.createElement('div');
+        div.className = 'video';
+        div.innerHTML = `
+          <iframe 
+            src="https://cdn.videy.co/${id}" 
+            allow="autoplay; fullscreen" 
+            allowfullscreen
+          ></iframe>
+        `;
         container.appendChild(div);
       });
 
-      let btns = '';
+      document.getElementById('prevBtn').disabled = currentPage === 1;
+      document.getElementById('nextBtn').disabled = end >= videoIDs.length;
+    }
+
+    document.getElementById('prevBtn').addEventListener('click', () => {
       if (currentPage > 1) {
-        btns += '<button onclick="prevPage()">⬅️ Sebelumnya</button>';
+        currentPage--;
+        renderPage();
       }
-      if (end < videoIDs.length) {
-        btns += '<button onclick="nextPage()">➡️ Selanjutnya</button>';
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      if ((currentPage * videosPerPage) < videoIDs.length) {
+        currentPage++;
+        renderPage();
       }
-      pagination.innerHTML = btns;
-    }
-
-    function nextPage() {
-      currentPage++;
-      renderPage();
-    }
-
-    function prevPage() {
-      currentPage--;
-      renderPage();
-    }
+    });
 
     renderPage();
   </script>
