@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Video List Pagination</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <title>Daftar Video</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     body {
-      background-color: #000;
+      background: #000;
       color: #fff;
       font-family: sans-serif;
       text-align: center;
@@ -22,78 +22,85 @@
       border: none;
     }
     .pagination {
-      margin-top: 20px;
+      margin-top: 30px;
     }
     button {
+      padding: 10px 20px;
+      margin: 5px;
       background: #25d366;
       color: white;
       border: none;
-      padding: 10px 20px;
-      margin: 10px 5px;
       border-radius: 5px;
-      cursor: pointer;
       font-size: 16px;
+      cursor: pointer;
     }
-    button:disabled {
-      background: #555;
-      cursor: not-allowed;
+    .warning {
+      color: red;
+      font-size: 18px;
+      margin-top: 100px;
     }
   </style>
 </head>
 <body>
-  <h1> Daftar Video</h1>
-  <div id="video-list"></div>
-  <div class="pagination">
-    <button id="prevBtn"> Sebelumnya</button>
-    <button id="nextBtn"> Selanjutnya</button>
-  </div>
+  <h1>🎬 Daftar Video</h1>
+  <div id="content"></div>
+  <div class="pagination" id="pagination"></div>
 
   <script>
-    const videosPerPage = 10;
-    let currentPage = 1;
-    let videos = [];
+    const isTelegram = navigator.userAgent.includes("Telegram");
 
-    async function loadVideos() {
-      const res = await fetch('videos.json');
-      videos = await res.json();
-      renderPage();
-    }
+    const videoIDs = [
+      "Y8DIUlMz1", "MVgY0KAV1", "qOB2Y89G1", "tJsXt7UR1", "GmAo3x9D1",
+      "BGGfAvGf2", "vHo4LkWq3", "CzNktFmA4", "NWkq98Fg5", "ZX8kFvWg6",
+      "HNKqvFzJ7", "SMtQ9vhJ8", "XqT29MkG9", "QLnzkAfk0", "ZKqvGxJm1"
+    ];
+
+    const perPage = 10;
+    let currentPage = 1;
 
     function renderPage() {
-      const start = (currentPage - 1) * videosPerPage;
-      const end = start + videosPerPage;
-      const pageVideos = videos.slice(start, end);
+      const container = document.getElementById("content");
+      const pagination = document.getElementById("pagination");
 
-      const container = document.getElementById('video-list');
+      if (!isTelegram) {
+        container.innerHTML = '<div class="warning">🚫 Halaman ini hanya bisa dibuka melalui Mini App Telegram.</div>';
+        pagination.innerHTML = '';
+        return;
+      }
+
+      const start = (currentPage - 1) * perPage;
+      const end = start + perPage;
+      const videos = videoIDs.slice(start, end);
+
       container.innerHTML = '';
-      pageVideos.forEach(id => {
-        const div = document.createElement('div');
-        div.className = 'video';
-        div.innerHTML = \`
-          <iframe src="https://cdn.videy.co/\${id}" allowfullscreen></iframe>
-        \`;
+      videos.forEach(id => {
+        const div = document.createElement("div");
+        div.className = "video";
+        div.innerHTML = \`<iframe src="https://cdn.videy.co/\${id}" allowfullscreen></iframe>\`;
         container.appendChild(div);
       });
 
-      document.getElementById('prevBtn').disabled = currentPage === 1;
-      document.getElementById('nextBtn').disabled = end >= videos.length;
+      let btns = '';
+      if (currentPage > 1) {
+        btns += '<button onclick="prevPage()">⬅️ Sebelumnya</button>';
+      }
+      if (end < videoIDs.length) {
+        btns += '<button onclick="nextPage()">➡️ Selanjutnya</button>';
+      }
+      pagination.innerHTML = btns;
     }
 
-    document.getElementById('prevBtn').addEventListener('click', () => {
-      if (currentPage > 1) {
-        currentPage--;
-        renderPage();
-      }
-    });
+    function nextPage() {
+      currentPage++;
+      renderPage();
+    }
 
-    document.getElementById('nextBtn').addEventListener('click', () => {
-      if ((currentPage * videosPerPage) < videos.length) {
-        currentPage++;
-        renderPage();
-      }
-    });
+    function prevPage() {
+      currentPage--;
+      renderPage();
+    }
 
-    loadVideos();
+    renderPage();
   </script>
 </body>
 </html>
